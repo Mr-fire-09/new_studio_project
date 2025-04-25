@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import { Inter } from 'next/font/google'; // Changed font to Inter for a more modern look
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+// import { AuthProvider } from '@/context/AuthContext'; // Placeholder for Auth context
 
 const inter = Inter({
   variable: '--font-sans', // Assign to a CSS variable
@@ -21,9 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} font-sans`}> {/* Applied Inter font globally */}
-      <body className={`antialiased bg-background text-foreground`}> {/* Removed Geist vars, added base styles */}
-        {children}
-        <Toaster />
+      <body className={`antialiased text-foreground`}> {/* Removed specific bg, rely on global gradient */}
+        {/* <AuthProvider> */} {/* Wrap with AuthProvider when implemented */}
+          {children}
+          <Toaster />
+        {/* </AuthProvider> */}
       </body>
     </html>
   );

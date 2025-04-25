@@ -82,11 +82,32 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+            'gradient-xy': { /* Added gradient animation keyframes */
+              '0%, 100%': {
+                'background-size': '400% 400%',
+                'background-position': 'left center',
+              },
+              '50%': {
+                'background-size': '200% 200%',
+                'background-position': 'right center',
+              },
+            },
+            'fadeIn': { /* Added fade-in animation */
+              'from': { opacity: '0', transform: 'translateY(10px)' },
+              'to': { opacity: '1', transform: 'translateY(0)' },
+            },
+             'bounce-short': { /* Added score bounce animation */
+               '0%, 100%': { transform: 'translateY(0)' },
+               '50%': { transform: 'translateY(-8px)' },
+             }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+            'gradient-xy': 'gradient-xy 15s ease infinite', // Added gradient animation
+            'fadeIn': 'fadeIn 0.5s ease-out forwards', // Added fade-in animation
+            'bounce-short': 'bounce-short 0.6s ease-in-out', // Added bounce animation
   		}
   	}
   },

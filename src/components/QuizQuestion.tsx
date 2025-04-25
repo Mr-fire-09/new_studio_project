@@ -27,6 +27,7 @@ export default function QuizQuestion() {
   const [isPending, startTransition] = useTransition();
 
   const [score, setScore] = useState<number>(0);
+  const [animateScore, setAnimateScore] = useState<boolean>(false); // State for score animation trigger
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(TIME_PER_QUESTION);
@@ -123,7 +124,12 @@ export default function QuizQuestion() {
     setSubmitted(true);
 
     if (correct) {
-      setScore((prevScore) => prevScore + 1);
+        setScore((prevScore) => {
+            const newScore = prevScore + 1;
+            setAnimateScore(true); // Trigger animation
+            setTimeout(() => setAnimateScore(false), 600); // Reset animation state after duration
+            return newScore;
+        });
     }
 
     setTimeout(() => { // Keep simulation for feedback
@@ -169,20 +175,22 @@ export default function QuizQuestion() {
    };
 
   const getOptionStyle = (option: string) => {
+    const baseStyle = "border rounded-lg cursor-pointer transition-all duration-200 ease-in-out transform hover:scale-[1.02] focus-within:scale-[1.02] focus-within:shadow-lg"; // Added hover/focus animation
+
     if (!submitted) {
-        return selectedAnswer === option ? "border-primary ring-2 ring-primary shadow-md" : "border-border hover:border-primary/70";
+        return `${baseStyle} ${selectedAnswer === option ? "border-primary ring-2 ring-primary shadow-md" : "border-border hover:border-primary/70"}`;
     }
 
     const isCorrectAnswer = question && question.options.indexOf(option) === question.correctAnswerIndex;
     const isSelected = selectedAnswer === option;
 
     if (isCorrectAnswer) {
-        return "bg-green-100 border-green-500 text-green-900 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300 ring-2 ring-green-500 shadow-md";
+        return `${baseStyle} bg-green-100 border-green-500 text-green-900 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300 ring-2 ring-green-500 shadow-md scale-100`; // Ensure final state is not scaled
     }
     if (isSelected && !isCorrect) {
-        return "bg-red-100 border-red-500 text-red-900 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300 ring-2 ring-red-500 shadow-md";
+        return `${baseStyle} bg-red-100 border-red-500 text-red-900 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300 ring-2 ring-red-500 shadow-md scale-100`; // Ensure final state is not scaled
     }
-    return "border-border opacity-60 cursor-default"; // Fade out non-selected, non-correct options
+    return `${baseStyle} border-border opacity-60 cursor-default pointer-events-none`; // Fade out non-selected, non-correct options, disable interaction
   };
 
 
@@ -205,24 +213,24 @@ export default function QuizQuestion() {
 
   if (isLoading || isPending) {
     return (
-      <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-xl">
+      <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-xl bg-card/80 backdrop-blur-sm"> {/* Added subtle transparency */}
         <CardHeader className="p-6">
-           <Skeleton className="h-5 w-1/4 mb-4" /> {/* Progress skeleton */}
-          <Skeleton className="h-6 w-3/4 mb-2" />
-          <Skeleton className="h-4 w-1/2" />
+           <Skeleton className="h-5 w-1/4 mb-4 bg-muted/50" /> {/* Progress skeleton */}
+          <Skeleton className="h-6 w-3/4 mb-2 bg-muted/50" />
+          <Skeleton className="h-4 w-1/2 bg-muted/50" />
         </CardHeader>
         <CardContent className="p-6">
           <div className="space-y-4">
-             <Skeleton className="h-5 w-1/5 mb-4 ml-auto" /> {/* Timer skeleton */}
-            <Skeleton className="h-14 w-full rounded-lg" />
-            <Skeleton className="h-14 w-full rounded-lg" />
-            <Skeleton className="h-14 w-full rounded-lg" />
-            <Skeleton className="h-14 w-full rounded-lg" />
+             <Skeleton className="h-5 w-1/5 mb-4 ml-auto bg-muted/50" /> {/* Timer skeleton */}
+            <Skeleton className="h-14 w-full rounded-lg bg-muted/50" />
+            <Skeleton className="h-14 w-full rounded-lg bg-muted/50" />
+            <Skeleton className="h-14 w-full rounded-lg bg-muted/50" />
+            <Skeleton className="h-14 w-full rounded-lg bg-muted/50" />
           </div>
         </CardContent>
         <CardFooter className="flex justify-between p-6 bg-secondary/30">
-          <Skeleton className="h-5 w-1/6" /> {/* Score skeleton */}
-          <Skeleton className="h-10 w-28" />
+          <Skeleton className="h-5 w-1/6 bg-muted/50" /> {/* Score skeleton */}
+          <Skeleton className="h-10 w-28 bg-muted/50" />
         </CardFooter>
       </Card>
     );
@@ -230,10 +238,10 @@ export default function QuizQuestion() {
 
   if (quizFinished) {
      return (
-       <Card className="w-full max-w-lg mx-auto shadow-xl rounded-xl overflow-hidden text-center">
-         <CardHeader className="bg-primary p-8">
+       <Card className="w-full max-w-lg mx-auto shadow-xl rounded-xl overflow-hidden text-center bg-card/90 backdrop-blur-sm animate-fadeIn"> {/* Added transparency and animation */}
+         <CardHeader className="bg-primary/90 p-8"> {/* Slightly transparent header */}
            <CardTitle className="text-3xl font-bold text-primary-foreground">Quiz Finished!</CardTitle>
-            <Trophy className="mx-auto h-16 w-16 text-yellow-400 mt-4" />
+            <Trophy className="mx-auto h-16 w-16 text-yellow-400 mt-4 animate-bounce" /> {/* Bounce animation */}
          </CardHeader>
          <CardContent className="p-8 space-y-4">
            <p className="text-xl text-muted-foreground">Your final score is:</p>
@@ -243,7 +251,7 @@ export default function QuizQuestion() {
             </p>
          </CardContent>
          <CardFooter className="p-6 bg-secondary/30 flex justify-center">
-           <Button onClick={handleRestartQuiz} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+           <Button onClick={handleRestartQuiz} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground transform hover:scale-105 transition-transform"> {/* Added hover scale */}
               <RotateCcw className="mr-2 h-5 w-5" /> Play Again
            </Button>
          </CardFooter>
@@ -254,7 +262,7 @@ export default function QuizQuestion() {
 
   if (!question) {
     return (
-      <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-xl">
+      <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-xl bg-card/80 backdrop-blur-sm"> {/* Added transparency */}
         <CardHeader className="p-6">
           <CardTitle className="text-xl text-destructive">Error</CardTitle>
         </CardHeader>
@@ -271,11 +279,11 @@ export default function QuizQuestion() {
   const progressValue = ((currentQuestionIndex + (submitted ? 1 : 0)) / TOTAL_QUESTIONS) * 100;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-xl overflow-hidden border border-border">
+    <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-xl overflow-hidden border border-border bg-card/90 backdrop-blur-sm"> {/* Enhanced shadow, added transparency */}
        <CardHeader className="p-6 border-b border-border bg-secondary/30">
           <div className="flex justify-between items-center mb-4">
              <Progress value={progressValue} className="w-2/3 h-2" aria-label={`Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS}`}/>
-             <div className={`flex items-center text-sm font-medium p-1 px-2 rounded ${timer <= 5 ? 'text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/30' : 'text-muted-foreground'}`}>
+             <div className={`flex items-center text-sm font-medium p-1 px-2 rounded ${timer <= 5 ? 'text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/30 animate-pulse' : 'text-muted-foreground'}`}> {/* Added pulse animation for low time */}
                <TimerIcon className="h-4 w-4 mr-1" />
                {timer}s
              </div>
@@ -294,7 +302,7 @@ export default function QuizQuestion() {
              <Label
                key={index}
                htmlFor={`option-${index}`}
-               className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all duration-200 ease-in-out ${getOptionStyle(option)}`}
+               className={`flex items-center justify-between p-4 ${getOptionStyle(option)}`}
                aria-live="polite" // Announce changes for screen readers
              >
                <div className="flex items-center space-x-3">
@@ -313,11 +321,11 @@ export default function QuizQuestion() {
          </RadioGroup>
        </CardContent>
        <CardFooter className="flex justify-between items-center p-6 bg-secondary/30 border-t border-border">
-         <div className="text-lg font-semibold text-primary flex items-center">
-             <Target className="mr-2 h-5 w-5 text-primary/80" /> Score: {score}
-         </div>
+          <div className="text-lg font-semibold text-primary flex items-center">
+            <Target className="mr-2 h-5 w-5 text-primary/80" /> Score: <span className={`ml-1 ${animateScore ? 'animate-bounce-short' : ''}`}>{score}</span> {/* Apply animation class */}
+          </div>
          {submitted ? (
-           <Button onClick={handleNextQuestion} className="bg-accent hover:bg-accent/90 text-accent-foreground min-w-[150px] text-base py-2.5 px-6">
+            <Button onClick={handleNextQuestion} className="bg-accent hover:bg-accent/90 text-accent-foreground min-w-[150px] text-base py-2.5 px-6 transform transition-transform hover:scale-105"> {/* Added hover scale */}
              {currentQuestionIndex === TOTAL_QUESTIONS - 1 ? 'Finish Quiz' : 'Next Question'}
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 ml-2">
                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -327,7 +335,7 @@ export default function QuizQuestion() {
            <Button
              onClick={handleSubmit}
              disabled={selectedAnswer === null || isSubmitting || isLoading}
-             className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[150px] text-base py-2.5 px-6"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[150px] text-base py-2.5 px-6 transform transition-transform hover:scale-105" // Added hover scale
               aria-label="Submit your answer"
            >
              {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
