@@ -1,16 +1,20 @@
-import { Code } from 'lucide-react';
+import { CodeXml } from 'lucide-react'; // Changed icon to CodeXml for better representation
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 flex items-center">
-          <Code className="mr-2 h-6 w-6 text-primary" />
-          <span className="text-lg font-bold tracking-tight text-primary">
-            CodeDuel
+    // Added slight padding, removed background blur for cleaner solid color
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm">
+      <div className="container flex h-16 items-center"> {/* Increased height */}
+        <div className="mr-6 flex items-center"> {/* Increased margin */}
+          <CodeXml className="mr-2 h-7 w-7 text-primary" /> {/* Increased icon size */}
+          <span className="text-xl font-bold tracking-tight text-primary"> {/* Increased text size */}
+            CodeDuel Arena
           </span>
         </div>
-        {/* Add Navigation or User Profile section here if needed */}
+        {/* Placeholder for potential future nav items or user profile */}
+        {/* <nav className="ml-auto flex items-center space-x-4"> */}
+        {/*   <Button variant="ghost">Login</Button> */}
+        {/* </nav> */}
       </div>
     </header>
   );

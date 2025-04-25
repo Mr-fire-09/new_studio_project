@@ -1,21 +1,17 @@
 import type {Metadata} from 'next';
-import {Geist, Geist_Mono} from 'next/font/google';
+import { Inter } from 'next/font/google'; // Changed font to Inter for a more modern look
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"; // Import Toaster
+import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-sans', // Assign to a CSS variable
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
-  title: 'CodeDuel - Real-time Quiz for Developers',
-  description: 'Test your coding knowledge in real-time quizzes.',
+  title: 'CodeDuel Arena - Challenge Your Coding Skills', // Updated Title
+  description: 'Engage in fast-paced coding quizzes and climb the ranks!', // Updated Description
 };
 
 export default function RootLayout({
@@ -24,10 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${inter.variable} font-sans`}> {/* Applied Inter font globally */}
+      <body className={`antialiased bg-background text-foreground`}> {/* Removed Geist vars, added base styles */}
         {children}
-        <Toaster /> {/* Add Toaster here */}
+        <Toaster />
       </body>
     </html>
   );
